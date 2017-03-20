@@ -14,7 +14,7 @@ import java.util.Random;
  */
 public class Bob {
     
-    private BigInteger n, d, e, signature;
+    private BigInteger n, d, e;
     private final int length = 1024;
     
     public Bob()
@@ -28,9 +28,9 @@ public class Bob {
         n = p.multiply(q); // public key   (p*q)
         BigInteger phi = (p.subtract(BigInteger.ONE)).multiply((q.subtract(BigInteger.ONE))); // phi(n) = (p-1)(q-1)
         
-        e = new BigInteger("3"); // public key
+        e = new BigInteger("2"); // public key
         while (phi.gcd(e).intValue() > 1) 
-            e = e.add(new BigInteger("2"));
+            e = e.add(BigInteger.ONE);
         
         d = e.modInverse(phi); // private key     e*d = 1(mod phi(n))...solve for d
     }
@@ -50,15 +50,9 @@ public class Bob {
         return d;
     }
     
-    public BigInteger encrypt(BigInteger m) throws Exception 
+    public BigInteger encrypt(BigInteger m)
     {
-        if (m.compareTo(n) >= 0) 
-            throw new Exception();
-         else 
-        {
-            signature = m.modPow(d, n);
-            return m.modPow(e, n);
-        }
+        return m.modPow(e, n); 
     }
 
 
