@@ -16,48 +16,39 @@ import java.math.BigInteger;
 
 public class RSA_Main {
     
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     
     {
-        
-        String message = "m=93"; // message to send
-        BigInteger bitMessage = new BigInteger(message.getBytes()); //convert message to bits
-        BigInteger EncryptedMessage;
-        String DecryptedMessage = "";
         Bob _Bob = new Bob();
+        Alice _Alice = new Alice();
+        Noah _Noah = new Noah();
+        
+        String message = "m=93";
+        
+        ////////Bob to Alice...
+        BigInteger bitMessage = _Bob.convertToBit(message);    
+        
+        BigInteger n = _Alice.getPublicKey_N();
+        BigInteger e = _Alice.getPublicKey_E();
+        
+        BigInteger encryptedMessage = _Bob.encryption(bitMessage, e, n);
+        BigInteger decryptedMessage =  _Alice.decrypt(encryptedMessage);
+        String finalDecodedMessage = _Alice.convertToString(decryptedMessage);
+        
+        System.out.println("Alice received a message from Bob!\n The message says: " + finalDecodedMessage);
         
         
-        BigInteger n = _Bob.getN();
-        BigInteger d = _Bob.getD();
-        BigInteger e = _Bob.getE();
+        ///////Bob to Noah...   
         
-        Alice _Alice = new Alice(n,d,e); // Create Alice object that takes n and d as arguments
+        n = _Noah.getPublicKey_N();
+        e = _Noah.getPublicKey_E();
         
-        EncryptedMessage = _Bob.encrypt(bitMessage); //Call encrypt method and passes bitMessage as an arguement
+        encryptedMessage = _Bob.encryption(bitMessage, e, n);
+        decryptedMessage =  _Noah.decrypt(encryptedMessage);
+        finalDecodedMessage = _Noah.convertToString(decryptedMessage);
         
-        bitMessage = _Alice.decrypt(EncryptedMessage);//Calls decrypt method and passess the above variable as an argument
-        
-        DecryptedMessage = new String(bitMessage.toByteArray()); //Converts bit back to String
-        
-        System.out.println("Alice received a message from Bob!\n The message says: " + DecryptedMessage);
-        
-        /////////////////////////////////Next process is from Bob to Noah
-        message = "Emacs sucks!";
-        bitMessage = new BigInteger(message.getBytes());
-        Bob _Bob2 = new Bob();
-        n = _Bob2.getN();
-        d = _Bob2.getD();
-        e = _Bob2.getE();
-        
-        Noah _Noah = new Noah(n,d,e);
-        
-        EncryptedMessage = _Bob2.encrypt(bitMessage);
-        
-        bitMessage = _Noah.decrypt(EncryptedMessage);
-        
-        DecryptedMessage = new String(bitMessage.toByteArray());
-        
-        System.out.println("Noah received a message from Bob!\n The message says: " + DecryptedMessage);
+        System.out.println("Noah received a message from Bob!\n The message says: " + finalDecodedMessage);
+
         
     }
     
