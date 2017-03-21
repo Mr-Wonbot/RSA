@@ -1,4 +1,4 @@
-
+import java.util.Random;
 import java.math.BigInteger;
 
 /*
@@ -13,18 +13,46 @@ import java.math.BigInteger;
  */
 public class Noah {
     
-     private BigInteger n, d, e;
+    private BigInteger n, d, e;
+    private final int length = 1024;
     
-    public Noah(BigInteger n, BigInteger d, BigInteger e)
+    public Noah()
     {
-        this.n = n;
-        this.d = d;
-        this.e = e;
+        Random random = new Random();     
+            
+        //generates random number of 1024 bit length that are probably prime 
+        BigInteger p = BigInteger.probablePrime(length, random); 
+    	BigInteger q = BigInteger.probablePrime(length, random);
+            
+        n = p.multiply(q); // public key   (p*q)
+        BigInteger phi = (p.subtract(BigInteger.ONE)).multiply((q.subtract(BigInteger.ONE))); // phi(n) = (p-1)(q-1)
+
+        e = new BigInteger("2"); // public key
+        
+        while (phi.gcd(e).intValue() > 1) 
+            e = e.add(BigInteger.ONE);
+
+       d = e.modInverse(phi); // private key     e*d = 1(mod phi(n))...solve for d
+    }
+    
+    public BigInteger getPublicKey_N()
+    {
+        return n;
+    }
+    
+    public BigInteger getPublicKey_E()
+    {
+        return e;
     }
     
     public BigInteger decrypt(BigInteger message) 
     {
         return message.modPow(d, n);
+    }
+    
+    public String convertToString(BigInteger message)
+    {
+        return new String(message.toByteArray());
     }
     
 }
